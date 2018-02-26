@@ -2,78 +2,65 @@ package com.company;
 
 public class Fan {
 
-    private int r;
-    private int rMinus;
+    private int radian;
+    private boolean isLeftTurned;
     private char[][] fan;
-    private int lastIndex;
 
-    public Fan(int r) {
-        if (r > 0){
-            this.r = r;
-            this.fan = new char[2*this.r][2*this.r];
-            this.lastIndex = (2*this.r)-1;
-        }else {
-            this.rMinus = r;
-            this.r = r*(-1);
-            this.fan = new char[(2*r)*(-1)][(2*r)*(-1)];
-            this.lastIndex = ((2*r)*(-1))-1;
-        }
-    }
+    private int tempRadian;
+    private int tempLastIndex;
+    private int tempFirstIndex;
 
-    public Fan(){
 
-    }
 
     public void printFan() {
+        for (int i = 0; i < (radian*2); i++) {
+            for (int j = 0; j < (radian*2); j++) {
+                System.out.print(fan[i][j]);
+            }
+            System.out.println();
+        }
+    }
 
-        if (r == 0){
-            System.exit(0);
+    public void fillTheFan(int tempRadian){
+        if (tempRadian <= 2){
+            fillCenter();
         }
 
-        fillCenter();
+        fillCorners();
 
-        if (r > 1 || rMinus < -1){
-            fillCorners();
+        fillTheRest();
+    }
 
-            fillAround();
-
-            for (int i = 0; i < lastIndex+1; i++){
-                for (int j = 0; j < lastIndex+1; j++){
-                    System.out.print(fan[i][j]);
-                }
-                System.out.println();
-            }
+    private void fillTheRest(){
+        if (isLeftTurned){
+            fillFanLeftTurned();
+        }else {
+            fanFanRightTurned();
         }
     }
 
     private void fillCorners() {
-        fan[0][0] = '*';
-        fan[0][lastIndex] = '*';
-        fan[lastIndex][0] = '*';
-        fan[lastIndex][lastIndex] = '*';
+        fan[tempFirstIndex][tempFirstIndex] = '*';
+        fan[tempFirstIndex][tempLastIndex] = '*';
+        fan[tempLastIndex][tempFirstIndex] = '*';
+        fan[tempLastIndex][tempLastIndex] = '*';
     }
 
     private void fillCenter(){
-        fan[r-1][r-1] = '*';
-        fan[r-1][r] = '*';
-        fan[r][r-1] = '*';
-        fan[r][r] = '*';
+        fan[radian-1][radian-1] = '*';
+        fan[radian-1][radian] = '*';
+        fan[radian][radian-1] = '*';
+        fan[radian][radian] = '*';
     }
 
-    private void fillAround(){
-        if (r > 0 && rMinus == 0){
-            fanLeftTurned();
-        }else {
-            fanRightTurned();
-        }
-    }
-
-    private void fanRightTurned() {
-        for (int i = 0; i < 2 * r; i++) {
-            for (int j = 0; j < 2 * r; j++) {
-                if (!(fan[i][j] == '*')) {
-                    if (i == 0 && j < r || i < r && j == lastIndex ||
-                            i == lastIndex && j >= r || i >= r && j == 0) {
+    private void fillFanLeftTurned() {
+        for (int i = tempFirstIndex; i <= tempLastIndex; i++){
+            for (int j = tempFirstIndex; j <= tempLastIndex; j++){
+                if (!(fan[i][j] == '*') && !(fan[i][j] == '.')){
+                    if (i == tempFirstIndex && j >= radian
+                            || i >= radian && j == tempLastIndex
+                            || i == tempLastIndex && j < radian
+                            || i < radian && j == tempFirstIndex) {
                         fan[i][j] = '.';
                     } else {
                         fan[i][j] = '*';
@@ -83,13 +70,14 @@ public class Fan {
         }
     }
 
-
-    private void fanLeftTurned() {
-        for (int i = 0; i < 2*r; i++){
-            for (int j = 0; j < 2*r; j++){
-                if (!(fan[i][j] == '*')){
-                    if (i == 0 && j >= r || i >= r && j == lastIndex ||
-                            i == lastIndex && j < r || i < r && j == 0) {
+    private void fanFanRightTurned() {
+        for (int i = tempFirstIndex; i <=tempLastIndex; i++) {
+            for (int j = tempFirstIndex; j <= tempLastIndex; j++) {
+                if (!(fan[i][j] == '*') && !(fan[i][j] == '.')) {
+                    if (i == tempFirstIndex && j < radian
+                            || i < radian && j == tempLastIndex
+                            || i == tempLastIndex && j >= radian
+                            || i >= radian && j == tempFirstIndex) {
                         fan[i][j] = '.';
                     } else {
                         fan[i][j] = '*';
@@ -99,35 +87,39 @@ public class Fan {
         }
     }
 
-
-    public void setR(int r) {
-        if (r > 0) {
-            this.r = r;
+    public void setRadian(int radian) {
+        if (radian > 0) {
+            this.radian = radian;
         }else {
-            this.rMinus = r;
-            this.r = r*(-1);
+            this.radian = radian*(-1);
         }
     }
 
-    public void setrMinus(int r) {
-        if(r < 0) {
-            this.rMinus = r;
-        }
+    public int getRadian() {
+        return radian;
     }
 
-    public void setFan(int r) {
-        if (r > 0) {
-            this.fan = new char[2*this.r][2*this.r];
-        }else{
-            this.fan = new char[(2*r)*(-1)][(2*r)*(-1)];
-        }
-    }
-
-    public void setLastIndex(int r) {
-        if(r > 0) {
-            this.lastIndex = (2*this.r)-1;
+    public void setLeftTurned(int radian) {
+        if (radian > 0){
+            this.isLeftTurned = true;
         }else {
-            this.lastIndex = ((2*r)*(-1))-1;
+            this.isLeftTurned = false;
         }
+    }
+
+    public void setFan() {
+        this.fan = new char[2 * radian][2 * radian];
+    }
+
+    public void setTempRadian(int radian){
+        this.tempRadian = radian;
+    }
+
+    public void setTempLastIndex() {
+        this.tempLastIndex = radian + tempRadian -1;
+    }
+
+    public void setTempFirstIndex() {
+        this.tempFirstIndex = radian - tempRadian;
     }
 }
